@@ -1,1 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ClickSense Demo</title>
+    <script>
+        let pageLoadTime = Date.now();
 
+        function sendClick() {
+            const clickTime = Date.now();
+
+            fetch('/click', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    pageLoadTime: pageLoadTime,
+                    clickTime: clickTime
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                alert(`Reaction Time: ${data.reaction_time_ms} ms\nClassification: ${data.label}`);
+            });
+        }
+    </script>
+</head>
+
+<body>
+    <h2>ClickSense Demo</h2>
+    <button onclick="sendClick()">Continue</button>
+</body>
+</html>
