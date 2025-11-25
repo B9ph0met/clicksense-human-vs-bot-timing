@@ -105,20 +105,21 @@
             const shipping = document.getElementById("shipping").value;
 
             fetch('/click', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    pageLoadTime: pageLoadTime,
-                    clickTime: clickTime,
-                    formData: {
-                        name,
-                        email,
-                        size,
-                        quantity,
-                        shipping
-                    }
-                })
-            })
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+        pageLoadTime: pageLoadTime,
+        clickTime: clickTime,
+        clientType: "human", // ground truth
+        formData: {
+            name,
+            email,
+            size,
+            quantity,
+            shipping
+        }
+    })
+})            
             .then(res => res.json())
             .then(data => {
                 alert(
