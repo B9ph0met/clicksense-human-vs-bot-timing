@@ -8,7 +8,18 @@ app = Flask(__name__, static_folder='static')
 LOG_FILE = "click_logs.csv"
 
 
-def log_interaction(reaction_time_ms, label, user_agent, ip, name, email, size, quantity, shipping):
+def log_interaction(
+    reaction_time_ms,
+    label,
+    user_agent,
+    ip,
+    name,
+    email,
+    size,
+    quantity,
+    shipping,
+    client_type,
+):
     """Append a single interaction to a CSV log file."""
     row = [
         datetime.utcnow().isoformat(),
@@ -20,7 +31,8 @@ def log_interaction(reaction_time_ms, label, user_agent, ip, name, email, size, 
         email,
         size,
         quantity,
-        shipping
+        shipping,
+        client_type,
     ]
 
     header = [
@@ -33,10 +45,10 @@ def log_interaction(reaction_time_ms, label, user_agent, ip, name, email, size, 
         "email",
         "size",
         "quantity",
-        "shipping"
+        "shipping",
+        "client_type",  # ground truth: human, fast_bot, evasive_bot, etc.
     ]
 
-    # If file doesn't exist, create it with the header
     file_exists = os.path.isfile(LOG_FILE)
 
     with open(LOG_FILE, "a", newline="") as f:
@@ -61,7 +73,7 @@ def click():
     # compute timing
     reaction_time_ms = click_time - page_load
 
-    # classify
+    # simple rule-based classifier
     if reaction_time_ms < 100:
         label = "likely_bot"
     elif reaction_time_ms <= 5000:
@@ -77,6 +89,9 @@ def click():
     quantity = form_data.get("quantity", "")
     shipping = form_data.get("shipping", "")
 
+    # ground truth client type (human, fast_bot, evasive_bot, etc.)
+    client_type = data.get("clientType", "unknown")
+
     # client context
     user_agent = request.headers.get("User-Agent", "unknown")
     ip = request.remote_addr or "unknown"
@@ -91,7 +106,8 @@ def click():
         email,
         size,
         quantity,
-        shipping
+        shipping,
+        client_type,
     )
 
     return jsonify({
