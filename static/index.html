@@ -1,31 +1,189 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>ClickSense Demo</title>
+    <meta charset="UTF-8" />
+    <title>ClickSense Demo – Sneaker Drop</title>
+
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: #f4f4f5;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        .container {
+            margin-top: 40px;
+            background: #ffffff;
+            padding: 24px 28px;
+            border-radius: 16px;
+            max-width: 480px;
+            width: 100%;
+            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.15);
+        }
+
+        h1 {
+            margin-top: 0;
+            font-size: 1.6rem;
+        }
+
+        p.subtext {
+            color: #6b7280;
+            margin-top: 4px;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        select {
+            width: 100%;
+            padding: 8px 10px;
+            border-radius: 8px;
+            border: 1px solid #d4d4d8;
+            font-size: 0.9rem;
+            margin-bottom: 12px;
+            box-sizing: border-box;
+        }
+
+        .inline-group {
+            display: flex;
+            gap: 12px;
+        }
+
+        .inline-group > div {
+            flex: 1;
+        }
+
+        button {
+            margin-top: 10px;
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 999px;
+            border: none;
+            background: #2563eb;
+            color: white;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #1d4ed8;
+        }
+
+        .note {
+            margin-top: 10px;
+            font-size: 0.8rem;
+            color: #9ca3af;
+        }
+    </style>
+
     <script>
         let pageLoadTime = Date.now();
 
-        function sendClick() {
+        function placeOrder(event) {
+            event.preventDefault(); // stop real form submit
+
             const clickTime = Date.now();
+
+            // Collect some basic form data (purely for demo)
+            const name = document.getElementById("name").value;
+            const email = document.getElementById("email").value;
+            const size = document.getElementById("size").value;
+            const quantity = document.getElementById("quantity").value;
+            const shipping = document.getElementById("shipping").value;
 
             fetch('/click', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     pageLoadTime: pageLoadTime,
-                    clickTime: clickTime
+                    clickTime: clickTime,
+                    formData: {
+                        name,
+                        email,
+                        size,
+                        quantity,
+                        shipping
+                    }
                 })
             })
             .then(res => res.json())
             .then(data => {
-                alert(`Reaction Time: ${data.reaction_time_ms} ms\nClassification: ${data.label}`);
+                alert(
+                    `Reaction Time: ${data.reaction_time_ms} ms\n` +
+                    `Classification: ${data.label}`
+                );
+            })
+            .catch(err => {
+                console.error(err);
+                alert("Error contacting server.");
             });
         }
     </script>
 </head>
 
 <body>
-    <h2>ClickSense Demo</h2>
-    <button onclick="sendClick()">Continue</button>
+    <div class="container">
+        <h1>Limited Sneaker Drop</h1>
+        <p class="subtext">
+            Complete the form and place your order. The system will (secretly) analyse
+            how fast you check out.
+        </p>
+
+        <form onsubmit="placeOrder(event)">
+            <label for="name">Full name</label>
+            <input id="name" type="text" placeholder="Alex Johnson" required />
+
+            <label for="email">Email</label>
+            <input id="email" type="email" placeholder="you@example.com" required />
+
+            <div class="inline-group">
+                <div>
+                    <label for="size">Shoe size</label>
+                    <select id="size" required>
+                        <option value="">Select</option>
+                        <option>7</option>
+                        <option>8</option>
+                        <option>9</option>
+                        <option>10</option>
+                        <option>11</option>
+                        <option>12</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="quantity">Quantity</label>
+                    <select id="quantity" required>
+                        <option>1</option>
+                        <option>2</option>
+                    </select>
+                </div>
+            </div>
+
+            <label for="shipping">Shipping method</label>
+            <select id="shipping" required>
+                <option>Standard (3–5 days)</option>
+                <option>Express (1–2 days)</option>
+            </select>
+
+            <button type="submit">Place Order</button>
+            <p class="note">
+                Demo only – this doesn’t process real orders. Timing data is used to
+                illustrate human vs bot behavior.
+            </p>
+        </form>
+    </div>
 </body>
 </html>
