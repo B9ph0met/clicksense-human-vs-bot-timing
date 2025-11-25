@@ -53,10 +53,6 @@ Simulates a more advanced automation client:
 * Per-client-type statistics
 * Human vs bot separation
 
-Example output:
-
-![Reaction Time Comparison](graph_fast_vs_evasive.png)
-
 ---
 
 ## 📁 Project Structure
